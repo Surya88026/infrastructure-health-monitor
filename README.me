@@ -1,0 +1,36 @@
+# Containerized Infrastructure Health Monitoring & Automation
+
+A Go-based CLI application for managing server inventories and monitoring TCP connectivity.
+
+## Features
+- Server inventory management through CLI commands.
+- JSON-based data persistence.
+- TCP connectivity and health checks.
+- Server health statistics.
+- Docker containerization.
+- Scheduled health checks using Linux cron and shell scripting.
+
+## Tech Stack
+- Go
+- Docker
+- Linux
+- TCP Networking
+- JSON
+- Shell Scripting
+
+## Run Locally
+
+```bash
+go run . list
+go run . health
+go run . stats
+```
+
+## Build with Docker
+
+```bash
+docker build -t healthchecker .
+docker run --rm healthchecker list
+```
+
+**Status:** Actively under development.
