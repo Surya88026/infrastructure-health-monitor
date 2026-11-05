@@ -1,0 +1,15 @@
+# Runtime data
+servers.json
+
+# Environment and secrets
+.env
+.env.*
+
+# Go binaries
+healthchecker
+*.exe
+
+# IDE
+.vscode/
+.idea/
+*.log
