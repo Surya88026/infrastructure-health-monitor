@@ -4,19 +4,24 @@ import (
 	"net"
 	"strconv"
 	"time"
-	"fmt"
+	//"fmt"
 
 )
 
-func IsHealthy(s Server) bool{
+func IsHealthy(s Server) (bool,time.Duration,error){
 	address := net.JoinHostPort(s.IP,strconv.Itoa(s.Port))
 
-	conn, err := net.DialTimeout("tcp",address,3*time.Second)
+	start := time.Now()
+	conn, err := net.DialTimeout("tcp",address,5*time.Second)
+
+	duration := time.Since(start)
 
 	if err != nil {
-		fmt.Printf("Error : faced connection ... %s",err)
-		return false
+		// fmt.Printf("Error : faced connection issue ... %s",err)
+		return false,duration,err
 	}
 	defer conn.Close()
-	return true
+
+	
+	return true,duration,nil
 }

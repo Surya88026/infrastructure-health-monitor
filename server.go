@@ -22,11 +22,18 @@ func (s Server) CheckHealth() {
 func (s *Servers) ActiveServerCount() int {
 	activeServerCount := 0
 	for _,slc := range *s {
+		returnbool,_,err := IsHealthy(slc) 
+
+		if err != nil {
+			fmt.Printf("error : %v\n",err)
+			
+		}
 		
-		if IsHealthy(slc) {
+		if returnbool {
 			
 			activeServerCount++
 		}
+		
 	}
 	return activeServerCount
 }
@@ -34,7 +41,7 @@ func (s *Servers) ActiveServerCount() int {
 func (s *Servers) list(){
 	
 	for _,slc := range *s {
-		fmt.Printf("server ... %+v \n",slc)
+		fmt.Printf("server IP: %s at Port : %d \n",slc.IP,slc.Port)
 	}
 }
 

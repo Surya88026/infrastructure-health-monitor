@@ -2,19 +2,23 @@
 package main
 import (
 	"fmt"
-	
+	"time"
 	"os"
 	"strconv"
 
 )
-func main(){
+type ServerConnectionDetail struct {
+	serverInfo Server
+	connTime time.Duration
+	err error
+}
 
-	//fmt.Printf("Parsed Data: %+v\n",LoadServers())
+type connectionInfo []ServerConnectionDetail
+
+func main(){
 	
 	servers := LoadServers()
 	
-
-
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go run . [list|add|health|stats]")
 		return
@@ -54,21 +58,49 @@ func main(){
 		}
 		servers.Addserver(ip,status,port)
 		servers.list()
+
 	case "health":
+
 		fmt.Println("checking server health...")
+
+		var failedserver connectionInfo
+		var connectedserver connectionInfo 
 		for i := range servers {
+			returnbool,returnValue,err := IsHealthy(servers[i])
 		
-		if IsHealthy(servers[i]) {
-			servers[i].CheckHealth()
-			//activeServerCount++
+			
+			if returnbool {
+				connectedserver= append(connectedserver,ServerConnectionDetail{servers[i],returnValue,err})
+			}else {
+				failedserver = append(failedserver, ServerConnectionDetail{servers[i],returnValue,err})
+			}
 		}
-	}
+
+		if len(connectedserver) != 0 {
+			fmt.Printf("Connected Server : \n")
+			for _,s := range connectedserver {
+				fmt.Printf("  - server : %s at Port : %d | Duration : %v\n",s.serverInfo.IP,s.serverInfo.Port,s.connTime)
+			}
+		}
+
+
+		if len(failedserver) != 0{
+			fmt.Printf("Failed Connection : \n")
+			for _,s := range failedserver {
+				fmt.Printf("   - server : %s at Port : %d | Duration : %v\n Reason: %v\n",s.serverInfo.IP,s.serverInfo.Port,s.connTime, s.err)
+			}
+		}
+		
+
+
 
 	case "stats":
+		active := servers.ActiveServerCount()
+
 		fmt.Println("Showing server statistics...")
 		fmt.Printf("Total Server Count %d\n",len(servers))
-		fmt.Printf("Active Server Count %d\n",servers.ActiveServerCount())
-		fmt.Printf("Inactive Server Count %d\n",len(servers)-servers.ActiveServerCount())
+		fmt.Printf("Active Server Count %d\n",active)
+		fmt.Printf("Inactive Server Count %d\n",len(servers)-active)
 
 	default:
 		fmt.Println("Unknown command:", command)
