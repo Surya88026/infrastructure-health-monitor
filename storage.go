@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
-	"encoding/json"
 )
 
 func LoadServers() Servers {
@@ -12,11 +12,11 @@ func LoadServers() Servers {
 
 	file, err := os.Open("servers.json")
 
-	if os.IsNotExist(err){
+	if os.IsNotExist(err) {
 		return onloading
 	}
 	if err != nil {
-		fmt.Println( err)
+		fmt.Println(err)
 		return onloading
 	}
 	defer file.Close()
@@ -25,11 +25,9 @@ func LoadServers() Servers {
 
 	err = decoder.Decode(&onloading)
 	if err != nil {
-		fmt.Println("Error decoding array:",err)
+		fmt.Println("Error decoding array:", err)
 		return onloading
 	}
-
-	
 
 	return onloading
 }

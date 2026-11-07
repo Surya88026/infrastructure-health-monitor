@@ -1,58 +1,60 @@
 package main
 
 import (
-	"os"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"os"
 )
 
 type Server struct {
-
-	IP string
+	IP     string
 	Status string
-	Port int
+	Port   int
 }
 
 type Servers []Server
 
-
-func (s Server) CheckHealth() {	
-	fmt.Printf("checking %s ... %s... at Port number %d\n", s.IP,s.Status,s.Port)	
+func (s Server) CheckHealth() {
+	fmt.Printf("checking %s ... %s... at Port number %d\n", s.IP, s.Status, s.Port)
 }
+
 func (s *Servers) ActiveServerCount() int {
-	activeServerCount := 0
-	for _,slc := range *s {
-		returnbool,_,err := IsHealthy(slc) 
+	results := make([]bool, 0, len(*s))
 
-		if err != nil {
-			fmt.Printf("error : %v\n",err)
-			
-		}
-		
-		if returnbool {
-			
-			activeServerCount++
-		}
-		
+	for _, server := range *s {
+		isHealthy, _, _ := IsHealthy(server)
+		results = append(results, isHealthy)
 	}
-	return activeServerCount
+
+	return CountHealthyServers(results)
 }
 
-func (s *Servers) list(){
-	
-	for _,slc := range *s {
-		fmt.Printf("server IP: %s at Port : %d \n",slc.IP,slc.Port)
+func CountHealthyServers(results []bool) int {
+	count := 0
+
+	for _, healthy := range results {
+		if healthy {
+			count++
+		}
+	}
+	return count
+}
+
+func (s *Servers) list() {
+
+	for _, slc := range *s {
+		fmt.Printf("server IP: %s at Port : %d \n", slc.IP, slc.Port)
 	}
 }
 
 // func IsHealthyv1(s Server) bool {
-// 	return s.Status == "RUNNING" 
+// 	return s.Status == "RUNNING"
 // }
 
-func (s *Servers) Addserver(IP string , Status string, Port int){
-	server := Server { IP:IP,Status:Status,Port:Port}
+func (s *Servers) Addserver(IP string, Status string, Port int) {
+	server := Server{IP: IP, Status: Status, Port: Port}
 
-	*s =  append(*s, server)
+	*s = append(*s, server)
 
 	copyTobeSaved, err := json.MarshalIndent(*s, "", " ")
 	if err != nil {
@@ -67,8 +69,6 @@ func (s *Servers) Addserver(IP string , Status string, Port int){
 		return
 	}
 
-	return 
-	
+	return
+
 }
-
-
