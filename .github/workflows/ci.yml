@@ -11,18 +11,20 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: '1.18'
+          cache: false
 
       - name: Run tests
         run: go test ./...
 
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+
       - name: Build application
         run: go build -v ./...
 
-      - name: Check formatting
-        run: test -z "$(gofmt -l .)"
